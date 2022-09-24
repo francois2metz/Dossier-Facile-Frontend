@@ -95,7 +95,7 @@
                 :val="'disallow'"
                 v-model="allowTax"
                 @input="onSelectTaxAuth()"
-                class="fr-col-md-3 fr-col-12 disallow-btn"
+                class="fr-col-md-3 fr-col-12 disallow-btn no-max-width"
               >
                 <span>{{ $t("forbid-tax") }}</span>
               </BigRadio>
@@ -103,7 +103,7 @@
                 :val="'allow'"
                 v-model="allowTax"
                 @input="onSelectTaxAuth()"
-                class="fr-col-md-9 fr-col-12 blue-text"
+                class="fr-col-md-9 fr-col-12 blue-text no-max-width"
               >
                 <span>{{ $t("allow-tax") }}</span>
               </BigRadio>
@@ -258,7 +258,7 @@ export default class Tax extends Vue {
   customText = "";
 
   isDocDeleteVisible = false;
-  allowTax = null;
+  allowTax = "";
 
   getTaxLocalStorageKey() {
     return "tax_" + this.user.email;
@@ -569,6 +569,16 @@ export default class Tax extends Vue {
 .disallow-btn:hover {
   color: var(--primary);
   background-color: var(--blue-france-hover);
+}
+
+.selected {
+  // TODO replace buttons by radio and clean styles
+  color: var(--primary) !important;
+  background-color: var(--blue-france-hover) !important;
+}
+
+.no-max-width {
+  max-width: none;
 }
 </style>
 
