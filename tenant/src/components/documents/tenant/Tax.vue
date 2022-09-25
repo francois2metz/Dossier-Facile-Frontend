@@ -96,6 +96,7 @@
                 v-model="allowTax"
                 @input="onSelectTaxAuth()"
                 class="fr-col-md-3 fr-col-12 disallow-btn no-max-width"
+                :class="{ selected: allowTax === 'disallow' }"
               >
                 <span>{{ $t("forbid-tax") }}</span>
               </BigRadio>
@@ -104,6 +105,7 @@
                 v-model="allowTax"
                 @input="onSelectTaxAuth()"
                 class="fr-col-md-9 fr-col-12 blue-text no-max-width"
+                :class="{ selected: allowTax === 'allow' }"
               >
                 <span>{{ $t("allow-tax") }}</span>
               </BigRadio>
@@ -114,14 +116,12 @@
       <NakedCard
         class="fr-p-md-5w fr-mt-3w"
         v-if="
-          (acceptVerification && taxDocument.key === 'my-name') ||
+          ((allowTax === 'allow' || allowTax === 'disallow') &&
+            taxDocument.key === 'my-name') ||
             taxFiles().length > 0
         "
       >
-        <div
-          class="fr-mb-3w fr-mt-3w"
-          v-if="taxDocument.key === 'my-name' && acceptVerification"
-        >
+        <div class="fr-mb-3w fr-mt-3w" v-if="taxDocument.key === 'my-name'">
           <div v-html="taxDocument.explanationText"></div>
           <div
             class="fr-background-contrast--info fr-p-2w fr-mt-2w warning-box"
@@ -158,7 +158,7 @@
             @remove="remove(file)"
           />
         </div>
-        <div v-if="taxDocument.key === 'my-name' && acceptVerification">
+        <div v-if="taxDocument.key === 'my-name' && (allowTax === 'allow' || allowTax === 'disallow')">
           <div class="fr-mb-3w">
             <FileUpload
               :current-status="fileUploadStatus"
@@ -254,7 +254,6 @@ export default class Tax extends Vue {
   } = {};
   taxDocument = new DocumentType();
 
-  acceptVerification = false;
   customText = "";
 
   isDocDeleteVisible = false;
@@ -297,8 +296,11 @@ export default class Tax extends Vue {
       );
     }
 
-    if (this.taxDocument.key === "my-name" && this.taxFiles().length > 0) {
-      this.acceptVerification = true;
+    if (this.user.allowCheckTax === true) {
+      this.allowTax = "allow";
+    }
+    if (this.user.allowCheckTax === false) {
+      this.allowTax = "disallow";
     }
   }
 
@@ -440,10 +442,6 @@ export default class Tax extends Vue {
     }
 
     if (this.taxDocument.key === "my-name") {
-      formData.append(
-        "acceptVerification",
-        this.acceptVerification ? "true" : "false"
-      );
       formData.append("noDocument", "false");
     } else {
       formData.append("noDocument", "true");
